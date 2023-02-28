@@ -5,8 +5,9 @@ public class EventBookingTest {
         public static void refuseCaseCreationWhenAnAccountIsNotAttachedToACase(){
             // Given
     
-            Case request = new Case(Origin = 'Phone',Subject = 'Event Booking', Description = 'Book Spots');
-            
+            Case[] testRequests = TestDataFactory.createCasesNoAcct(1,'Phone');
+            Case request = testRequests.get(0);
+
             // When 
 
             Test.startTest();
@@ -26,11 +27,12 @@ public class EventBookingTest {
         @isTest
         public static void refuseCaseCreationWhenNoContactIsAttachedToAnAccount(){
             // Given
-      
-            Account a1 = new Account(Name = 'Salesforce');
-            insert a1;
 
-            Case request = new Case(Origin = 'Phone',Subject = 'Event Booking', Description = 'Book Spots', AccountId = a1.ID);
+            Account[] testAccts = TestDataFactory.createAccountsWithContacts(1,0);
+            Account a1 = testAccts.get(0);
+
+            Case[] testRequests = TestDataFactory.createCaseByAcct(a1,1,'Phone',0);
+            Case request = testRequests.get(0);
             
             // When 
 
@@ -51,20 +53,11 @@ public class EventBookingTest {
         @isTest
         public static void bookEventFromPhone(){
             // Given
-            
-            Account a1 = new Account(Name = 'Salesforce');
-            insert a1;
-            
-            Contact c1 = new Contact(LastName = 'Contact 1', AccountId = a1.ID);
-            insert c1;
-    
-            Contact c2 = new Contact(LastName = 'Contact 2', AccountId = a1.ID);
-            insert c2;
-    
-            Contact c3 = new Contact(LastName = 'Contact 3', AccountId = a1.ID);
-            insert c3;
-    
-            Case request = new Case(Origin = 'Phone',Subject = 'Event Booking', Description = 'Book Spots for Company A1 & their 3 employees', AccountId = a1.ID);
+            Account[] testAccts = TestDataFactory.createAccountsWithContacts(1,3);
+            Account a1 = testAccts.get(0);
+
+            Case[] testRequests = TestDataFactory.createCaseByAcct(a1,1,'Phone',3);
+            Case request = testRequests.get(0);
             
             // When 
 
@@ -76,6 +69,9 @@ public class EventBookingTest {
             // Then
 
             System.assert(result.isSuccess());
+            List<Case> expectedRequest = [SELECT Id, AccountId FROM Case WHERE AccountId=:a1.ID];
+            System.assertEquals(1,expectedRequest.size(),'No requests were created');
+
 
 
         }
@@ -85,23 +81,12 @@ public class EventBookingTest {
         public static void refuseEventBookingWhenNumberOfAttendeesIsMoreThanThreeForPhoneCases(){
             // Given
             
-            Account a1 = new Account(Name = 'Salesforce');
-            insert a1;
-            
-            Contact c1 = new Contact(LastName = 'Contact 1', AccountId = a1.ID);
-            insert c1;
-    
-            Contact c2 = new Contact(LastName = 'Contact 2', AccountId = a1.ID);
-            insert c2;
-    
-            Contact c3 = new Contact(LastName = 'Contact 3', AccountId = a1.ID);
-            insert c3;
+            Account[] testAccts = TestDataFactory.createAccountsWithContacts(1,4);
+            Account a1 = testAccts.get(0);
 
-            Contact c4 = new Contact(LastName = 'Contact 4', AccountId = a1.ID);
-            insert c4;
-    
-            Case request = new Case(Origin = 'Phone',Subject = 'Event Booking', Description = 'Book Spots for Company A1 & their 4 employees', AccountId = a1.ID);
-            
+            Case[] testRequests = TestDataFactory.createCaseByAcct(a1,1,'Phone',4);
+            Case request = testRequests.get(0);
+
             // When 
 
             Test.startTest();
@@ -120,17 +105,12 @@ public class EventBookingTest {
         
         @isTest
         public static void bookEventFromTheWeb(){
-            // Given
-            
-            Account a1 = new Account(Name = 'Salesforce');
-            insert a1;
+            Account[] testAccts = TestDataFactory.createAccountsWithContacts(1,1);
+            Account a1 = testAccts.get(0);
+
+            Case[] testRequests = TestDataFactory.createCaseByAcct(a1,1,'Web',1);
+            Case request = testRequests.get(0);
                 
-                   
-            Contact c1 = new Contact(LastName = 'Contact 1', AccountId = a1.ID);
-            insert c1;
-    
-            Case request = new Case(Origin = 'Web',Subject = 'Event Booking', Description = 'Book One Spot for Company A1', AccountId = a1.ID);
-            
             // When 
 
             Test.startTest();
@@ -142,6 +122,9 @@ public class EventBookingTest {
             // Then
 
             System.assert(result.isSuccess());
+            List<Case> expectedRequest = [SELECT Id, AccountId FROM Case WHERE AccountId=:a1.ID];
+            System.assertEquals(1,expectedRequest.size(),'No requests were created');
+
 
                 
         } 
@@ -149,21 +132,13 @@ public class EventBookingTest {
         @isTest
         public static void refuseEventBookingWhenNumberOfAttendeesIsMoreThanOneForWebCases(){
             // Given
-            
-            Account a1 = new Account(Name = 'Salesforce');
-            insert a1;
-            
-            Contact c1 = new Contact(LastName = 'Contact 1', AccountId = a1.ID);
-            insert c1;
-    
-            Contact c2 = new Contact(LastName = 'Contact 2', AccountId = a1.ID);
-            insert c2;
-    
-            Contact c3 = new Contact(LastName = 'Contact 3', AccountId = a1.ID);
-            insert c3;
-    
-            Case request = new Case(Origin = 'Web',Subject = 'Event Booking', Description = 'Book Spots for Company A1 & their 3 employees', AccountId = a1.ID);
-            
+
+            Account[] testAccts = TestDataFactory.createAccountsWithContacts(1,3);
+            Account a1 = testAccts.get(0);
+
+            Case[] testRequests = TestDataFactory.createCaseByAcct(a1,1,'Web',3);
+            Case request = testRequests.get(0);
+
             // When 
 
             Test.startTest();
@@ -178,8 +153,7 @@ public class EventBookingTest {
             System.assert(result.getErrors().size() > 0);
             System.assertEquals('Web request are only allowed to have one attendee',
             result.getErrors()[0].getMessage());
-
-                
+      
         } 
     
     
