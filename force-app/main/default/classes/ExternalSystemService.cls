@@ -3,7 +3,7 @@ public  class ExternalSystemService {
     private String webServiceURL;
 
     public ExternalSystemService(){
-        this.webServiceURL = 'https://th-apex-http-callout.herokuapp.com/animals';
+        this.webServiceURL = ('callout:animals_JSON?format=json');
     }
 
     public void registerAttendees(Case r){
