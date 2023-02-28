@@ -23,7 +23,7 @@ public  class ExternalSystemService {
                             response.getStatusCode() + ' ' + response.getStatus());
                     } else {
                        // Everything went as expected.
-                       notifyAttendeeByEmail(c);
+                       EmailService.sendEmail(c,r);
                     }
                 }
             
