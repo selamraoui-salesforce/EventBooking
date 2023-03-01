@@ -4,9 +4,16 @@ public with sharing class CaseTriggerHandler extends TriggerHandler {
     }
 
     public override void beforeUpdate() {
+        List<Id> requestIds = new List<Id>();
+        for (Case request  : (List<Case>) Trigger.new) {
+            requestIds.add(request.Id);
+        }
+
+        Map<Id, Case> mapRequest = new Map<Id, Case>([SELECT Id, Status FROM Case where Id IN :requestIds WITH SECURITY_ENFORCED ]);
+        List<Case> updateRequest = new List<Case>();
 
         for(Case request: (List<Case>) Trigger.new){
-            Case r = [SELECT AccountId, Status FROM Case where id=:request.ID];
+            Case r = mapRequest.get(request.Id);
             if(r.Status == 'Closed'){
                 ExternalSystemService service = new ExternalSystemService();
                 service.registerAttendees(r);
@@ -16,12 +23,20 @@ public with sharing class CaseTriggerHandler extends TriggerHandler {
     
     public override void beforeInsert() {
         Set<Id> accountIds = New Set<Id>();
+
+        for (Case request  : (List<Case>) Trigger.new) {
+            accountIds.add(request.AccountId);
+        }
+
+        Map<Id, Account> mapAccount = new Map<Id, Account>([SELECT ID, (select id from contacts) FROM Account where id IN :accountIds WITH SECURITY_ENFORCED]);
+        List<Account> updateAccount = new List<Account>();
+
         For(Case r : (List<Case>) Trigger.new)
         {
             if(r != null && r.AccountId != null){
 
-                Account account =  [SELECT ID, (select id from contacts) FROM Account where id = :r.AccountId LIMIT 1];
-        
+                Account account =  mapAccount.get(r.AccountId);
+
                 Integer s = account.Contacts.size();
         
                 if(s ==0){

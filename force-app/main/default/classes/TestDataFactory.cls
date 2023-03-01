@@ -57,4 +57,13 @@ public class TestDataFactory {
 
     }
 
+
+    public static List<Case> createClosedCaseByAcct(Account acc, Integer numReqPerAcct,String origin, Integer numContactsPerAcct){
+        List<Case> cases = createCaseByAcct(acc, numReqPerAcct, origin, numContactsPerAcct);
+        for(Case c: cases){
+            c.Status = 'Closed';
+        }
+        insert cases;
+        return cases;
+    }
 }

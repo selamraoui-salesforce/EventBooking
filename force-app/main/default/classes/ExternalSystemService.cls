@@ -6,28 +6,28 @@ public  class ExternalSystemService {
         this.webServiceURL = ('callout:animals_JSON?format=json');
     }
 
+ 
     public void registerAttendees(Case r){
-            for(Account a : [SELECT id FROM Account where id = :r.AccountId]){
-                for(Contact c : [SELECT id,name, email FROM Contact where accountid =: a.id ]){
-                    Http http = new Http();
-                    HttpRequest request = new HttpRequest();
-                    request.setEndpoint(this.webServiceURL);
-                    request.setMethod('POST');
-                    request.setHeader('Content-Type', 'application/json;charset=UTF-8');
-                    // Set the body as a JSON object
-                    request.setBody('{"name":"'+ c.name + '-' + c.email  +'}');
-                    HttpResponse response = http.send(request);
-                    // Parse the JSON response
-                    if (response.getStatusCode() != 201) {
-                        System.debug('The status code returned was not expected: ' +
-                            response.getStatusCode() + ' ' + response.getStatus());
-                    } else {
-                       // Everything went as expected.
-                       EmailService.sendEmail(c,r);
-                    }
+        Account acct = [SELECT id FROM Account where id = :r.AccountId WITH LIMIT 1 SECURITY_ENFORCED];
+        List<Contact> contacts = [SELECT id,name, email FROM Contact where accountid =: a.id WITH SECURITY_ENFORCED];
+            for(Contact c : contacts){
+                Http http = new Http();
+                HttpRequest request = new HttpRequest();
+                request.setEndpoint(this.webServiceURL);
+                request.setMethod('POST');
+                request.setHeader('Content-Type', 'application/json;charset=UTF-8');
+                // Set the body as a JSON object
+                request.setBody('{"name":"'+ c.name + '-' + c.email  +'}');
+                HttpResponse response = http.send(request);
+                // Parse the JSON response
+                if (response.getStatusCode() != 201) {
+                    System.debug('The status code returned was not expected: ' +
+                        response.getStatusCode() + ' ' + response.getStatus());
+                } else {
+                   // Everything went as expected.
+                   EmailService.sendEmail(c,r);
                 }
-            
-        }
+                }
     } 
 
     public void notifyAttendeeByEmail(Contact account){
