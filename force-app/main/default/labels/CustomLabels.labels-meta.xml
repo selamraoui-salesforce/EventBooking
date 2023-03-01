@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomLabels xmlns="http://soap.sforce.com/2006/04/metadata">
+    <labels>
+        <fullName>CannotCreateRequestWithNoAccountErrorMessage</fullName>
+        <categories>Error Message</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>Error Message when wanting to create a case without an attached account</shortDescription>
+        <value>You cannot create a request without attaching an account.</value>
+    </labels>
+</CustomLabels>

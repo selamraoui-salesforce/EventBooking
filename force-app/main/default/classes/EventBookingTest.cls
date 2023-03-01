@@ -1,8 +1,8 @@
 @isTest
-public class EventBookingTest {  
+private class EventBookingTest {  
 
         @isTest
-        public static void refuseCaseCreationWhenAnAccountIsNotAttachedToACase(){
+        private static void refuseCaseCreationWhenAnAccountIsNotAttachedToACase(){
             // Given
     
             Case[] testRequests = TestDataFactory.createCasesNoAcct(1,'Phone');
@@ -20,12 +20,11 @@ public class EventBookingTest {
 
             System.assert(!result.isSuccess());
             System.assert(result.getErrors().size() > 0);
-            System.assertEquals('You cannot create a request without attaching an account',
-            result.getErrors()[0].getMessage());
+            System.assertEquals(System.Label.Cannot_Create_Request_With_No_Account_Error_Message, result.getErrors()[0].getMessage());
         }
         
         @isTest
-        public static void refuseCaseCreationWhenNoContactIsAttachedToAnAccount(){
+        private static void refuseCaseCreationWhenNoContactIsAttachedToAnAccount(){
             // Given
 
             Account[] testAccts = TestDataFactory.createAccountsWithContacts(1,0);
@@ -46,12 +45,11 @@ public class EventBookingTest {
 
             System.assert(!result.isSuccess());
             System.assert(result.getErrors().size() > 0);
-            System.assertEquals('You cannot create a request for accounts without contacts',
-            result.getErrors()[0].getMessage());
+            System.assertEquals(System.Label.Cannot_Create_Request_For_Accounts_With_No_Contacts_Error_Message, result.getErrors()[0].getMessage());
         }
         
         @isTest
-        public static void bookEventFromPhone(){
+        private static void bookEventFromPhone(){
             // Given
             Account[] testAccts = TestDataFactory.createAccountsWithContacts(1,3);
             Account a1 = testAccts.get(0);
@@ -74,7 +72,7 @@ public class EventBookingTest {
         }
 
         @isTest
-        public static void refuseEventBookingWhenNumberOfAttendeesIsMoreThanThreeForPhoneCases(){
+        private static void refuseEventBookingWhenNumberOfAttendeesIsMoreThanThreeForPhoneCases(){
             // Given
             
             Account[] testAccts = TestDataFactory.createAccountsWithContacts(1,4);
@@ -94,12 +92,11 @@ public class EventBookingTest {
             // Then
             System.assert(!result.isSuccess());
             System.assert(result.getErrors().size() > 0);
-            System.assertEquals('Phone request are only allowed to have three attendee',
-            result.getErrors()[0].getMessage());
+            System.assertEquals(System.Label.Phone_Requests_Allow_Only_Three_Attendees_Error_Message, result.getErrors()[0].getMessage());
         }
         
         @isTest
-        public static void bookEventFromTheWeb(){
+        private static void bookEventFromTheWeb(){
             Account[] testAccts = TestDataFactory.createAccountsWithContacts(1,1);
             Account a1 = testAccts.get(0);
 
@@ -122,7 +119,7 @@ public class EventBookingTest {
         } 
             
         @isTest
-        public static void refuseEventBookingWhenNumberOfAttendeesIsMoreThanOneForWebCases(){
+        private static void refuseEventBookingWhenNumberOfAttendeesIsMoreThanOneForWebCases(){
             // Given
 
             Account[] testAccts = TestDataFactory.createAccountsWithContacts(1,3);
@@ -143,12 +140,11 @@ public class EventBookingTest {
 
             System.assert(!result.isSuccess());
             System.assert(result.getErrors().size() > 0);
-            System.assertEquals('Web request are only allowed to have one attendee',
-            result.getErrors()[0].getMessage());
+            System.assertEquals(System.Label.Web_Requests_Allow_Only_One_Attendee_Error_Message, result.getErrors()[0].getMessage());
         } 
 
         @isTest
-        public static void updateExistingClosedCase(){
+        private static void updateExistingCase(){
             // Given
 
             Account[] testAccts = TestDataFactory.createAccountsWithContacts(1,3);
@@ -175,13 +171,30 @@ public class EventBookingTest {
             
         }
 
-        // @isTest
-        // public static void send
+        @isTest
+        private static void sendEmailAfterAttendeeRegistry(){
+            // Given
+
+            //create account, contacts, closed case
+            //create mock http post request to register attendees
+
+            // When
+
+            Test.startTest();
+
+            ///
+            // request.Description = 'Book One Spot for the A1 company in our hotel';
+            // Database.SaveResult result = Database.update(request, false);  
+
+            Test.stopTest();
+
+            // Then
+        }
 
         /*
 
         @isTest
-        public static void closeExistingCase(){
+        private static void closeExistingCase(){
             // Given
             // Create account, contacts, case properly
             Account[] testAccts = TestDataFactory.createAccountsWithContacts(1,3);

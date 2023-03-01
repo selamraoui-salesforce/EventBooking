@@ -1,4 +1,4 @@
-public  class ExternalSystemService {
+public with sharing class ExternalSystemService {
 
     private String webServiceURL;
 
@@ -7,27 +7,33 @@ public  class ExternalSystemService {
     }
 
  
-    public void registerAttendees(Case r){
-        Account acct = [SELECT id FROM Account where id = :r.AccountId WITH LIMIT 1 SECURITY_ENFORCED];
-        List<Contact> contacts = [SELECT id,name, email FROM Contact where accountid =: a.id WITH SECURITY_ENFORCED];
-            for(Contact c : contacts){
-                Http http = new Http();
-                HttpRequest request = new HttpRequest();
-                request.setEndpoint(this.webServiceURL);
-                request.setMethod('POST');
-                request.setHeader('Content-Type', 'application/json;charset=UTF-8');
-                // Set the body as a JSON object
-                request.setBody('{"name":"'+ c.name + '-' + c.email  +'}');
-                HttpResponse response = http.send(request);
-                // Parse the JSON response
-                if (response.getStatusCode() != 201) {
-                    System.debug('The status code returned was not expected: ' +
-                        response.getStatusCode() + ' ' + response.getStatus());
-                } else {
-                   // Everything went as expected.
-                   EmailService.sendEmail(c,r);
-                }
-                }
+    public void registerAttendees(Case reservationRequest){
+        Account a = [SELECT Id FROM Account WHERE Id = :reservationRequest.Account.Id WITH SECURITY_ENFORCED LIMIT 1];
+        List<Contact> contacts = [SELECT Id,Name, Email FROM Contact WHERE AccountId = :a.Id WITH SECURITY_ENFORCED];
+        List<Contact> contactsToEmail = new List<Contact>();
+        for(Contact contact : contacts){
+            Http http = new Http();
+            HttpRequest request = new HttpRequest();
+
+            request.setEndpoint(this.webServiceURL);
+            request.setMethod('POST');
+            request.setHeader('Content-Type', 'application/json;charset=UTF-8');
+            // Set the body as a JSON object
+            request.setBody('{"name":"'+ contact.name + '-' + contact.email  +'}');
+
+            HttpResponse response = http.send(request);
+            // Parse the JSON response
+            if (response.getStatusCode() != 201) {
+                System.debug('The status code returned was not expected: ' +
+                    response.getStatusCode() + ' ' + response.getStatus());
+            } else {
+                // Everything went as expected.
+                contactsToEmail.add(contact);
+            }
+        }
+        EmailService.sendReservationConfirmationEmailsToAttendees(contactsToEmail, reservationRequest);
+
+
     } 
 
     public void notifyAttendeeByEmail(Contact account){

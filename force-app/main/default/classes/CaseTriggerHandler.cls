@@ -28,7 +28,7 @@ public with sharing class CaseTriggerHandler extends TriggerHandler {
             accountIds.add(request.AccountId);
         }
 
-        Map<Id, Account> mapAccount = new Map<Id, Account>([SELECT ID, (select id from contacts) FROM Account where id IN :accountIds WITH SECURITY_ENFORCED]);
+        Map<Id, Account> mapAccount = new Map<Id, Account>([SELECT Id, (SELECT Id FROM contacts) FROM Account Where Id IN :accountIds WITH SECURITY_ENFORCED]);
         List<Account> updateAccount = new List<Account>();
 
         For(Case r : triggerCases)
@@ -40,17 +40,17 @@ public with sharing class CaseTriggerHandler extends TriggerHandler {
                 Integer s = account.Contacts.size();
         
                 if(s == 0){
-                    r.addError('You cannot create a request for accounts without contacts');
+                    r.addError(System.Label.Cannot_Create_Request_For_Accounts_With_No_Contacts_Error_Message);
                 }   else {
                     switch on r.Origin {
                         when 'Web' {
                             if(s >= 2){
-                                r.addError('Web request are only allowed to have one attendee');
+                                r.addError(System.Label.Web_Requests_Allow_Only_One_Attendee_Error_Message);
                             }
                         }
                         when 'Phone'{
                             if(s >= 4){
-                                r.addError('Phone request are only allowed to have three attendee');
+                                r.addError(System.Label.Phone_Requests_Allow_Only_Three_Attendees_Error_Message);
                             }
                         }
                     }    
@@ -58,7 +58,7 @@ public with sharing class CaseTriggerHandler extends TriggerHandler {
                 }
         
             }else {
-                r.addError('You cannot create a request without attaching an account');
+                r.addError(System.Label.Cannot_Create_Request_With_No_Account_Error_Message);
             }
         
         }

@@ -9,8 +9,8 @@ public with sharing class EmailService {
             contactsMailAddresses.add(mailAddress);
         }
         message.toAddresses = contactsMailAddresses;
-        message.subject = 'Registration confirmed';
-        message.plainTextBody = 'Your registration has been confirmed.';
+        message.subject = System.Label.Attendee_Registration_Confirmation_Email_Subject;
+        message.plainTextBody = System.Label.Attendee_Registration_Confirmation_Email_Body;
         Messaging.SingleEmailMessage[] messages =   new List<Messaging.SingleEmailMessage> {message};
         Messaging.SendEmailResult[] results = Messaging.sendEmail(messages);
 
