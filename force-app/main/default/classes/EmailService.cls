@@ -1,13 +1,16 @@
 public with sharing class EmailService {
-    public EmailService() {
 
-    }
-    public static void sendEmail(Contact contact, Case r){
+    public static void sendReservationConfirmationEmailsToAttendees(List<Contact> contactsToEmail, Case reservationRequest){
         Messaging.SingleEmailMessage message = new Messaging.SingleEmailMessage();
-        message.toAddresses = new String[] { contact.email };
-        message.optOutPolicy = 'FILTER';
+        String[] contactsMailAddresses = new String[]{};
+
+        for(Contact contact: contactsToEmail){
+            String mailAddress = contact.email;
+            contactsMailAddresses.add(mailAddress);
+        }
+        message.toAddresses = contactsMailAddresses;
         message.subject = 'Registration confirmed';
-        message.plainTextBody = 'Hello, '+contact.FirstName+' '+contact.LastName+'! Your registration has been confirmed.';
+        message.plainTextBody = 'Your registration has been confirmed.';
         Messaging.SingleEmailMessage[] messages =   new List<Messaging.SingleEmailMessage> {message};
         Messaging.SendEmailResult[] results = Messaging.sendEmail(messages);
 
