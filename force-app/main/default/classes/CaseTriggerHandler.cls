@@ -39,33 +39,15 @@ public with sharing class CaseTriggerHandler extends TriggerHandler {
 
         For(Case bookingRequest: triggerCases)
         {
-            if(bookingRequest != null && bookingRequest.AccountId != null){
+            if(CaseTriggerHandlerHelper.isRequestAndAccountNotNull(bookingRequest)){
 
                 Account account =  mapAccount.get(bookingRequest.AccountId);
 
-                Integer s = account.Contacts.size();
-        
-                if(s == 0){
-                    bookingRequest.addError(System.Label.Cannot_Create_Request_For_Accounts_With_No_Contacts_Error_Message);
-                }   else {
-                    switch on bookingRequest.Origin {
-                        when 'Web' {
-                            if(s >= 2){
-                                bookingRequest.addError(System.Label.Web_Requests_Allow_Only_One_Attendee_Error_Message);
-                            }
-                        }
-                        when 'Phone'{
-                            if(s >= 4){
-                                bookingRequest.addError(System.Label.Phone_Requests_Allow_Only_Three_Attendees_Error_Message);
-                            }
-                        }
-                        when else{
-                            bookingRequest.addError(System.Label.Cannot_Create_Not_In_Phone_Or_Web_Error_Message);
-                        }
-                    }                 
-                }
-        
-            }else {
+                Integer requestAccountContactNumber = account.Contacts.size();
+    
+                CaseTriggerHandlerHelper.beforeCaseInsertContactNumberCheck(requestAccountContactsNumber,bookingRequest);  
+            }
+            else {
                 bookingRequest.addError(System.Label.Cannot_Create_Request_With_No_Account_Error_Message);
             }
         
