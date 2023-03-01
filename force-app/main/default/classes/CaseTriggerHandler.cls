@@ -45,7 +45,7 @@ public with sharing class CaseTriggerHandler extends TriggerHandler {
 
                 Integer requestAccountContactNumber = account.Contacts.size();
     
-                CaseTriggerHandlerHelper.beforeCaseInsertContactNumberCheck(requestAccountContactsNumber,bookingRequest);  
+                CaseTriggerHandlerHelper.beforeCaseInsertContactNumberCheck(requestAccountContactNumber,bookingRequest);  
             }
             else {
                 bookingRequest.addError(System.Label.Cannot_Create_Request_With_No_Account_Error_Message);
