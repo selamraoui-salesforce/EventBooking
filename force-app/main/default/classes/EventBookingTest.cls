@@ -28,9 +28,9 @@ private class EventBookingTest {
             // Given
 
             Account[] testAccts = TestDataFactory.createAccountsWithContacts(1,0);
-            Account a1 = testAccts.get(0);
+            Account account = testAccts.get(0);
 
-            Case[] testRequests = TestDataFactory.createCaseByAcct(a1,1,'Phone',0);
+            Case[] testRequests = TestDataFactory.createCaseByAcct(account,1,'Phone',0);
             Case request = testRequests.get(0);
             
             // When 
@@ -52,9 +52,9 @@ private class EventBookingTest {
         private static void bookEventFromPhone(){
             // Given
             Account[] testAccts = TestDataFactory.createAccountsWithContacts(1,3);
-            Account a1 = testAccts.get(0);
+            Account account = testAccts.get(0);
 
-            Case[] testRequests = TestDataFactory.createCaseByAcct(a1,1,'Phone',3);
+            Case[] testRequests = TestDataFactory.createCaseByAcct(account,1,'Phone',3);
             Case request = testRequests.get(0);
             
             // When 
@@ -67,7 +67,7 @@ private class EventBookingTest {
             // Then
 
             System.assert(result.isSuccess());
-            List<Case> expectedRequest = [SELECT Id, AccountId FROM Case WHERE AccountId=:a1.ID WITH SECURITY_ENFORCED];
+            List<Case> expectedRequest = [SELECT Id, AccountId FROM Case WHERE AccountId=:account.ID WITH SECURITY_ENFORCED];
             System.assertEquals(1,expectedRequest.size(),'No requests were created');
         }
 
@@ -76,9 +76,9 @@ private class EventBookingTest {
             // Given
             
             Account[] testAccts = TestDataFactory.createAccountsWithContacts(1,4);
-            Account a1 = testAccts.get(0);
+            Account account = testAccts.get(0);
 
-            Case[] testRequests = TestDataFactory.createCaseByAcct(a1,1,'Phone',4);
+            Case[] testRequests = TestDataFactory.createCaseByAcct(account,1,'Phone',4);
             Case request = testRequests.get(0);
 
             // When 
@@ -98,9 +98,9 @@ private class EventBookingTest {
         @isTest
         private static void bookEventFromTheWeb(){
             Account[] testAccts = TestDataFactory.createAccountsWithContacts(1,1);
-            Account a1 = testAccts.get(0);
+            Account account = testAccts.get(0);
 
-            Case[] testRequests = TestDataFactory.createCaseByAcct(a1,1,'Web',1);
+            Case[] testRequests = TestDataFactory.createCaseByAcct(account,1,'Web',1);
             Case request = testRequests.get(0);
                 
             // When 
@@ -114,7 +114,7 @@ private class EventBookingTest {
             // Then
 
             System.assert(result.isSuccess());
-            List<Case> expectedRequest = [SELECT Id, AccountId FROM Case WHERE AccountId=:a1.ID WITH SECURITY_ENFORCED];
+            List<Case> expectedRequest = [SELECT Id, AccountId FROM Case WHERE AccountId=:account.ID WITH SECURITY_ENFORCED];
             System.assertEquals(1,expectedRequest.size(),'No requests were created');
         } 
             
@@ -123,9 +123,9 @@ private class EventBookingTest {
             // Given
 
             Account[] testAccts = TestDataFactory.createAccountsWithContacts(1,3);
-            Account a1 = testAccts.get(0);
+            Account account = testAccts.get(0);
 
-            Case[] testRequests = TestDataFactory.createCaseByAcct(a1,1,'Web',3);
+            Case[] testRequests = TestDataFactory.createCaseByAcct(account,1,'Web',3);
             Case request = testRequests.get(0);
 
             // When 
@@ -148,9 +148,9 @@ private class EventBookingTest {
             // Given
 
             Account[] testAccts = TestDataFactory.createAccountsWithContacts(1,3);
-            Account a1 = testAccts.get(0);
+            Account account = testAccts.get(0);
 
-            Case[] testRequests = TestDataFactory.createClosedCaseByAcct(a1,1,'Phone',1);
+            Case[] testRequests = TestDataFactory.createClosedCaseByAcct(account,1,'Phone',1);
             Case request = testRequests.get(0);
 
             // When 
@@ -198,9 +198,9 @@ private class EventBookingTest {
             // Given
             // Create account, contacts, case properly
             Account[] testAccts = TestDataFactory.createAccountsWithContacts(1,3);
-            Account a1 = testAccts.get(0);
+            Account account = testAccts.get(0);
 
-            Case[] testRequests = TestDataFactory.createClosedCaseByAcct(a1,1,'Phone',3);
+            Case[] testRequests = TestDataFactory.createClosedCaseByAcct(account,1,'Phone',3);
             Case request = testRequests.get(0);
 
             // When start test

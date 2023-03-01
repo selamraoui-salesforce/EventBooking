@@ -7,8 +7,8 @@ public with sharing class ExternalSystemService {
     }
 
  
-    public void registerAttendees(Case reservationRequest){
-        Account a = [SELECT Id FROM Account WHERE Id = :reservationRequest.Account.Id WITH SECURITY_ENFORCED LIMIT 1];
+    public void registerAttendees(Case bookingRequest){
+        Account a = [SELECT Id FROM Account WHERE Id = :bookingRequest.Account.Id WITH SECURITY_ENFORCED LIMIT 1];
         List<Contact> contacts = [SELECT Id,Name, Email FROM Contact WHERE AccountId = :a.Id WITH SECURITY_ENFORCED];
         List<Contact> contactsToEmail = new List<Contact>();
         for(Contact contact : contacts){
@@ -31,7 +31,7 @@ public with sharing class ExternalSystemService {
                 contactsToEmail.add(contact);
             }
         }
-        EmailService.sendReservationConfirmationEmailsToAttendees(contactsToEmail, reservationRequest);
+        EmailService.sendReservationConfirmationEmailsToAttendees(contactsToEmail, bookingRequest);
 
 
     } 

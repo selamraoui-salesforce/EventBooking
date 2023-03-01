@@ -10,13 +10,12 @@ public with sharing class CaseTriggerHandler extends TriggerHandler {
         }
 
         Map<Id, Case> mapRequest = new Map<Id, Case>([SELECT Id, Status FROM Case WHERE Id IN :requestIds WITH SECURITY_ENFORCED ]);
-        List<Case> updateRequest = new List<Case>();
 
         for(Case request: triggerCases){
-            Case r = mapRequest.get(request.Id);
-            if(r.Status == 'Closed'){
+            Case bookingRequest = mapRequest.get(request.Id);
+            if(bookingRequest.Status == 'Closed'){
                 ExternalSystemService service = new ExternalSystemService();
-                service.registerAttendees(r);
+                service.registerAttendees(bookingRequest);
             }
         }
     }
@@ -29,36 +28,38 @@ public with sharing class CaseTriggerHandler extends TriggerHandler {
         }
 
         Map<Id, Account> mapAccount = new Map<Id, Account>([SELECT Id, (SELECT Id FROM contacts) FROM Account Where Id IN :accountIds WITH SECURITY_ENFORCED]);
-        List<Account> updateAccount = new List<Account>();
 
-        For(Case r : triggerCases)
+        For(Case bookingRequest : triggerCases)
         {
-            if(r != null && r.AccountId != null){
+            if(bookingRequest != null && bookingRequest.AccountId != null){
 
-                Account account =  mapAccount.get(r.AccountId);
+                Account account =  mapAccount.get(bookingRequest.AccountId);
 
                 Integer s = account.Contacts.size();
         
                 if(s == 0){
-                    r.addError(System.Label.Cannot_Create_Request_For_Accounts_With_No_Contacts_Error_Message);
+                    bookingRequest.addError(System.Label.Cannot_Create_Request_For_Accounts_With_No_Contacts_Error_Message);
                 }   else {
-                    switch on r.Origin {
+                    switch on bookingRequest.Origin {
                         when 'Web' {
                             if(s >= 2){
-                                r.addError(System.Label.Web_Requests_Allow_Only_One_Attendee_Error_Message);
+                                bookingRequest.addError(System.Label.Web_Requests_Allow_Only_One_Attendee_Error_Message);
                             }
                         }
                         when 'Phone'{
                             if(s >= 4){
-                                r.addError(System.Label.Phone_Requests_Allow_Only_Three_Attendees_Error_Message);
+                                bookingRequest.addError(System.Label.Phone_Requests_Allow_Only_Three_Attendees_Error_Message);
                             }
+                        }
+                        when else{
+                            bookingRequest.addError(System.Label.Cannot_Create_Not_In_Phone_Or_Web_Error_Message);
                         }
                     }    
                                 
                 }
         
             }else {
-                r.addError(System.Label.Cannot_Create_Request_With_No_Account_Error_Message);
+                bookingRequest.addError(System.Label.Cannot_Create_Request_With_No_Account_Error_Message);
             }
         
         }

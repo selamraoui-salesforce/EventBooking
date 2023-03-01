@@ -1,26 +1,26 @@
 @isTest
 public class TestDataFactory {
     public static List<Account> createAccountsWithContacts(Integer numAccts, Integer numContactsPerAcct){
-        List<Account> accts = new List<Account>();
+        List<Account> accounts = new List<Account>();
         for(Integer i=0;i<numAccts;i++){
             Account a = new Account(Name='Salesforce' + i);
-            accts.add(a);
+            accounts.add(a);
         }
-        insert accts;
+        insert accounts;
         List<Contact> contacts = new List<Contact>();
         for (Integer j=0;j<numAccts;j++) {
-            Account acct = accts[j];
+            Account account = accounts[j];
             // For each account just inserted, add contacts
             for (Integer k=0;k<numContactsPerAcct;k++) {
-                contacts.add(new Contact(LastName = 'Contact '+k, AccountId = acct.ID));  
+                contacts.add(new Contact(LastName = 'Contact '+k, AccountId = account.ID));  
             }
         }
 
         insert contacts;
-        return accts;
+        return accounts;
 
     }
-    public static List<Case> createCaseByAcct(Account acc, Integer numReqPerAcct,String origin, Integer numContactsPerAcct){
+    public static List<Case> createCaseByAcct(Account account, Integer numReqPerAcct,String origin, Integer numContactsPerAcct){
         String description = '';
         List<Case> requests = new List<Case>();
         if(numContactsPerAcct==0){
@@ -32,15 +32,13 @@ public class TestDataFactory {
         else{
             description = 'Book Spots for Company A1 & their '+numContactsPerAcct+' employees';
         }
-        // for(Account acc: accList){
             for(Integer i=0;i<numReqPerAcct;i++){
                 Case request = new Case(Origin = origin,
                                     Subject = 'Event Booking', 
                                     Description = description, 
-                                    AccountId = acc.ID);
+                                    AccountId = account.ID);
                 requests.add(request);
             }
-        // }
         return requests;
 
     }
@@ -58,10 +56,10 @@ public class TestDataFactory {
     }
 
 
-    public static List<Case> createClosedCaseByAcct(Account acc, Integer numReqPerAcct,String origin, Integer numContactsPerAcct){
-        List<Case> cases = createCaseByAcct(acc, numReqPerAcct, origin, numContactsPerAcct);
-        for(Case c: cases){
-            c.Status = 'Closed';
+    public static List<Case> createClosedCaseByAcct(Account account, Integer numReqPerAcct,String origin, Integer numContactsPerAcct){
+        List<Case> cases = createCaseByAcct(account, numReqPerAcct, origin, numContactsPerAcct);
+        for(Case bookingRequest: cases){
+            bookingRequest.Status = 'Closed';
         }
         insert cases;
         return cases;
