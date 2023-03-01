@@ -1,6 +1,6 @@
 public with sharing class EmailService {
 
-    public static void sendReservationConfirmationEmailsToAttendees(List<Contact> contactsToEmail, Case bookingRequest){
+    public static void sendReservationConfirmationEmailsToAttendees(List<Contact> contactsToEmail){
         Messaging.SingleEmailMessage message = new Messaging.SingleEmailMessage();
         String[] contactsMailAddresses = new String[]{};
 

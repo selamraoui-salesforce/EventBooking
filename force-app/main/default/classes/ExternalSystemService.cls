@@ -6,12 +6,9 @@ public with sharing class ExternalSystemService {
         this.webServiceURL = ('callout:animals_JSON?format=json');
     }
 
- 
-    public void registerAttendees(Case bookingRequest){
-        Account a = [SELECT Id FROM Account WHERE Id = :bookingRequest.Account.Id WITH SECURITY_ENFORCED LIMIT 1];
-        List<Contact> contacts = [SELECT Id,Name, Email FROM Contact WHERE AccountId = :a.Id WITH SECURITY_ENFORCED];
+    public void registerAttendees(List<Contact> closedRequestsAttendees){
         List<Contact> contactsToEmail = new List<Contact>();
-        for(Contact contact : contacts){
+        for(Contact contact : closedRequestsAttendees){
             Http http = new Http();
             HttpRequest request = new HttpRequest();
 
@@ -19,7 +16,7 @@ public with sharing class ExternalSystemService {
             request.setMethod('POST');
             request.setHeader('Content-Type', 'application/json;charset=UTF-8');
             // Set the body as a JSON object
-            request.setBody('{"name":"'+ contact.name + '-' + contact.email  +'}');
+            request.setBody('{"name":"'+ contact.Name + '-' + contact.Email  +'}');
 
             HttpResponse response = http.send(request);
             // Parse the JSON response
@@ -31,18 +28,17 @@ public with sharing class ExternalSystemService {
                 contactsToEmail.add(contact);
             }
         }
-        EmailService.sendReservationConfirmationEmailsToAttendees(contactsToEmail, bookingRequest);
-
-
+        EmailService.sendReservationConfirmationEmailsToAttendees(contactsToEmail);
     } 
 
-    public void notifyAttendeeByEmail(Contact account){
+
+    public void notifyAttendeeByEmail(Contact contact){
       
         Task tk = new Task();
-        tk.Subject = 'Send Email To' + account.name;
+        tk.Subject = 'Send Email To' + contact.Name;
         tk.Status = 'Open';
         tk.Priority = 'Normal';
-        tk.WhatId = account.ID;
+        tk.WhatId = contact.ID;
         insert tk;
     } 
 

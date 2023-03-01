@@ -5,19 +5,27 @@ public with sharing class CaseTriggerHandler extends TriggerHandler {
     //put trigger new in a variable
     public override void beforeUpdate() {
         List<Id> requestIds = new List<Id>();
-        for (Case request  : triggerCases) {
+
+        for (Case request: triggerCases) {
             requestIds.add(request.Id);
         }
 
         Map<Id, Case> mapRequest = new Map<Id, Case>([SELECT Id, Status FROM Case WHERE Id IN :requestIds WITH SECURITY_ENFORCED ]);
 
+        List<Case> closedRequests = new List<Case>();
+        List<Id> closedRequestsAccountIds = new List<Id>();
+
         for(Case request: triggerCases){
             Case bookingRequest = mapRequest.get(request.Id);
             if(bookingRequest.Status == 'Closed'){
-                ExternalSystemService service = new ExternalSystemService();
-                service.registerAttendees(bookingRequest);
+                closedRequests.add(bookingRequest);
+                closedRequestsAccountIds.add(bookingRequest.AccountId);
             }
         }
+
+        List<Contact> closedRequestsAttendees = [SELECT Name, Email FROM Contact WHERE AccountId IN :closedRequestsAccountIds];
+        ExternalSystemService service = new ExternalSystemService();
+        service.registerAttendees(closedRequestsAttendees);
     }
     
     public override void beforeInsert() {
@@ -29,7 +37,7 @@ public with sharing class CaseTriggerHandler extends TriggerHandler {
 
         Map<Id, Account> mapAccount = new Map<Id, Account>([SELECT Id, (SELECT Id FROM contacts) FROM Account Where Id IN :accountIds WITH SECURITY_ENFORCED]);
 
-        For(Case bookingRequest : triggerCases)
+        For(Case bookingRequest: triggerCases)
         {
             if(bookingRequest != null && bookingRequest.AccountId != null){
 
@@ -54,8 +62,7 @@ public with sharing class CaseTriggerHandler extends TriggerHandler {
                         when else{
                             bookingRequest.addError(System.Label.Cannot_Create_Not_In_Phone_Or_Web_Error_Message);
                         }
-                    }    
-                                
+                    }                 
                 }
         
             }else {
