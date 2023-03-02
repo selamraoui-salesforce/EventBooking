@@ -177,6 +177,21 @@ private class EventBookingTest {
         }
 
 
+        @isTest
+        private static void testThatEmailWasSent(){
+            //When 
+            Contact contactToEmail = new Contact(LastName='Salesforce', Email='selamraoui@salesforce.com');
+            List<Contact> contactsToEmail = new List<Contact> ();
+            contactsToEmail.add(contactToEmail);
+            Test.startTest();
+            System.assertEquals(0, Limits.getEmailInvocations(), 'No emails should be sent');
+     
+            EmailService.sendReservationConfirmationEmailsToAttendees(contactsToEmail);
+     
+            System.assertEquals(1, Limits.getEmailInvocations(), 'Emails should be sent');
+            Test.stopTest();
+        }
+
 
     
 }
